@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Мой день</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="/public/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#007aff">
+</head>
+<body>
+    <div class="app">
+        <nav class="tab-bar">
+            <button class="tab-btn active" data-screen="profile"><span class="tab-icon">👤</span><span class="tab-label">Профиль</span></button>
+            <button class="tab-btn" data-screen="notes"><span class="tab-icon">📝</span><span class="tab-label">Заметки</span></button>
+            <button class="tab-btn" data-screen="habits"><span class="tab-icon">✅</span><span class="tab-label">Привычки</span></button>
+            <button class="tab-btn" data-screen="stats"><span class="tab-icon">📊</span><span class="tab-label">Статистика</span></button>
+        </nav>
+
+        <main class="content">
+            <!-- Профиль -->
+            <section class="screen active" id="profileScreen">
+                <div class="avatar-section">
+                    <div class="avatar" id="avatarDisplay">👤</div>
+                    <input type="file" id="avatarUpload" accept="image/*" style="display: none">
+                    <button class="btn btn-secondary" id="changeAvatarBtn">Изменить фото</button>
+                </div>
+                <div class="profile-header"><h2 id="profileNameDisplay">Иван Петров</h2></div>
+                <div class="form-group"><label>Имя</label><input type="text" id="profileName" class="form-input" value="Иван Петров"></div>
+                <div class="form-group"><label>О себе</label><textarea id="profileBio" class="form-input" rows="2">Студент СПО, учусь мобильной разработке</textarea></div>
+                <div class="form-group"><label>День рождения</label><input type="date" id="profileBirthday" class="form-input"></div>
+                <button class="btn btn-primary" id="saveProfileBtn">Сохранить</button>
+                <div class="hint" id="profileHint">Изменения сохранены</div>
+            </section>
+
+            <!-- Заметки -->
+            <section class="screen" id="notesScreen">
+                <div class="notes-header">
+                    <input type="text" id="noteTitle" class="form-input" placeholder="Заголовок">
+                    <textarea id="noteContent" class="form-input" rows="3" placeholder="Текст заметки..."></textarea>
+                    <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+                        <button class="btn btn-small btn-secondary" id="insertBulletListBtn">• Маркированный</button>
+                        <button class="btn btn-small btn-secondary" id="insertNumberListBtn">1. Нумерованный</button>
+                    </div>
+                    <button class="btn btn-primary" id="addNoteBtn">Добавить заметку</button>
+                </div>
+                <div class="notes-grid" id="notesList"></div>
+            </section>
+
+            <!-- Привычки -->
+            <section class="screen" id="habitsScreen">
+                <div class="habits-header"><h3>Сегодня</h3><span class="date" id="todayDate"></span></div>
+                <div class="habits-list">
+                    <div class="habit-item">
+                        <div class="habit-header"><span class="habit-name">💧 Вода</span><span class="habit-value" id="waterTotal">0 л</span></div>
+                        <div class="habit-progress"><input type="number" id="waterInput" min="0" step="0.1" placeholder="0.5 л"><button id="addWaterBtn">+</button></div>
+                        <div class="habit-total" id="waterHistory"></div>
+                    </div>
+                    <div class="habit-item">
+                        <div class="habit-header"><span class="habit-name">🏃 Спорт</span><span class="habit-value" id="sportTotal">0 мин</span></div>
+                        <div class="habit-progress"><input type="number" id="sportInput" min="0" step="5" placeholder="15 мин"><button id="addSportBtn">+</button></div>
+                        <div class="habit-total" id="sportHistory"></div>
+                    </div>
+                    <div class="habit-item">
+                        <div class="habit-header"><span class="habit-name">📚 Чтение</span><span class="habit-value" id="readTotal">0 мин</span></div>
+                        <div class="habit-progress"><input type="number" id="readInput" min="0" step="5" placeholder="30 мин"><button id="addReadBtn">+</button></div>
+                        <div class="habit-total" id="readHistory"></div>
+                    </div>
+                </div>
+                <button class="btn btn-primary" id="saveHabitsBtn">Сохранить прогресс</button>
+                <div class="hint" id="habitsHint">Прогресс сохранен</div>
+            </section>
+
+            <!-- Статистика -->
+            <section class="screen" id="statsScreen">
+                <div class="stats-grid">
+                    <div class="stat-card"><div class="stat-value" id="statStreak">0</div><div class="stat-label">дней подряд</div></div>
+                    <div class="stat-card"><div class="stat-value" id="statTotalWater">0 л</div><div class="stat-label">всего воды</div></div>
+                    <div class="stat-card"><div class="stat-value" id="statNotes">0</div><div class="stat-label">заметок</div></div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card"><div class="stat-value" id="statTotalSport">0 мин</div><div class="stat-label">спорта</div></div>
+                    <div class="stat-card"><div class="stat-value" id="statTotalRead">0 мин</div><div class="stat-label">чтения</div></div>
+                    <div class="stat-card"><div class="stat-value" id="statTotalAll">0</div><div class="stat-label">всего действий</div></div>
+                </div>
+                <div class="week-section">
+                    <h4>Выберите день</h4>
+                    <div class="week-grid" id="weekStats"></div>
+                    <div class="day-notes" id="dayNotesContainer" style="display: none;">
+                        <h5>Заметки за день <span id="selectedDate"></span></h5>
+                        <div id="dayNotesList"></div>
+                        <textarea id="dayNoteInput" class="form-input" rows="2" placeholder="Новая заметка за этот день..."></textarea>
+                        <button class="btn btn-primary btn-small" id="addDayNoteBtn">Добавить</button>
+                    </div>
+                </div>
+                <button class="btn btn-secondary" id="resetDataBtn">Очистить все данные</button>
+            </section>
+        </main>
+    </div>
+
+    <!-- Модалка редактирования заметки -->
+    <div class="edit-modal hidden" id="editModal">
+        <div class="edit-modal-content">
+            <h3>Редактировать заметку</h3>
+            <input type="text" id="editTitle" class="form-input" placeholder="Заголовок">
+            <textarea id="editContent" class="form-input" rows="4" placeholder="Текст заметки..."></textarea>
+            <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+                <button class="btn btn-small btn-secondary" id="editBulletListBtn">• Список</button>
+                <button class="btn btn-small btn-secondary" id="editNumberListBtn">1. Список</button>
+            </div>
+            <div class="edit-modal-actions">
+                <button class="btn btn-secondary" id="cancelEditBtn">Отмена</button>
+                <button class="btn btn-primary" id="saveEditBtn">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
