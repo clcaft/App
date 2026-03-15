@@ -4,594 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Мой день</title>
+    <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="/public/manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#007aff" id="themeColor">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-        }
-
-        /* Светлая тема (по умолчанию) */
-        :root {
-            --bg-primary: #f5f5f5;
-            --bg-secondary: white;
-            --bg-card: #f8f9fa;
-            --text-primary: #1c1c1e;
-            --text-secondary: #3a3a3c;
-            --text-tertiary: #8e8e93;
-            --border-color: #e9ecef;
-            --accent-color: #007aff;
-            --success-color: #34c759;
-            --danger-color: #ff3b30;
-            --tab-bar-border: #f0f0f0;
-            --modal-overlay: rgba(0,0,0,0.5);
-        }
-
-        /* Темная тема */
-        body.dark-theme {
-            --bg-primary: #1c1c1e;
-            --bg-secondary: #2c2c2e;
-            --bg-card: #3a3a3c;
-            --text-primary: #ffffff;
-            --text-secondary: #f5f5f5;
-            --text-tertiary: #8e8e93;
-            --border-color: #48484a;
-            --accent-color: #0a84ff;
-            --success-color: #30d158;
-            --danger-color: #ff453a;
-            --tab-bar-border: #38383a;
-            --modal-overlay: rgba(0,0,0,0.7);
-        }
-
-        body {
-            background: var(--bg-primary);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            transition: background-color 0.3s ease;
-        }
-
-        .app {
-            width: 100%;
-            max-width: 390px;
-            height: 700px;
-            background: var(--bg-secondary);
-            border-radius: 32px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            position: relative;
-            transition: background-color 0.3s ease;
-        }
-
-        .tab-bar {
-            display: flex;
-            justify-content: space-around;
-            padding: 8px 4px 12px;
-            background: var(--bg-secondary);
-            border-top: 1px solid var(--tab-bar-border);
-            order: 2;
-            transition: background-color 0.3s ease;
-        }
-
-        .tab-btn {
-            flex: 1;
-            background: none;
-            border: none;
-            padding: 8px 4px;
-            border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            color: var(--text-tertiary);
-            font-size: 12px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .tab-btn.active {
-            color: var(--accent-color);
-        }
-
-        .tab-icon {
-            font-size: 22px;
-        }
-
-        .tab-label {
-            font-size: 11px;
-            font-weight: 500;
-        }
-
-        .content {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px 16px;
-            order: 1;
-            background: var(--bg-secondary);
-            transition: background-color 0.3s ease;
-        }
-
-        .screen {
-            display: none;
-            animation: fade 0.3s ease;
-        }
-
-        .screen.active {
-            display: block;
-        }
-
-        @keyframes fade {
-            from { opacity: 0.5; }
-            to { opacity: 1; }
-        }
-
-        /* Кнопка переключения темы */
-        .theme-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            width: 44px;
-            height: 44px;
-            border-radius: 22px;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 100;
-            font-size: 22px;
-            transition: 0.2s;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        .theme-toggle:active {
-            transform: scale(0.95);
-        }
-
-        .avatar-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 24px;
-        }
-
-        .avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background: var(--bg-card);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            overflow: hidden;
-            border: 2px solid var(--accent-color);
-        }
-
-        .avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .profile-header {
-            text-align: center;
-            margin-bottom: 24px;
-        }
-
-        .profile-header h2 {
-            font-size: 20px;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text-tertiary);
-            margin-bottom: 6px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 14px 16px;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 14px;
-            font-size: 16px;
-            color: var(--text-primary);
-            transition: 0.2s;
-        }
-
-        .form-input::placeholder {
-            color: var(--text-tertiary);
-            opacity: 0.7;
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: var(--accent-color);
-            background: var(--bg-secondary);
-        }
-
-        textarea.form-input {
-            resize: vertical;
-            min-height: 80px;
-        }
-
-        .btn {
-            width: 100%;
-            padding: 16px;
-            border: none;
-            border-radius: 14px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-            margin-bottom: 8px;
-        }
-
-        .btn-primary {
-            background: var(--accent-color);
-            color: white;
-        }
-
-        .btn-primary:active {
-            background: var(--accent-color);
-            opacity: 0.8;
-        }
-
-        .btn-secondary {
-            background: var(--bg-card);
-            color: var(--accent-color);
-            border: 1px solid var(--accent-color);
-        }
-
-        .btn-small {
-            padding: 8px 12px;
-            font-size: 14px;
-            width: auto;
-            display: inline-block;
-        }
-
-        .hint {
-            text-align: center;
-            color: var(--success-color);
-            font-size: 14px;
-            opacity: 0;
-            transition: 0.2s;
-            margin-top: 8px;
-        }
-
-        .hint.show {
-            opacity: 1;
-        }
-
-        .notes-header {
-            margin-bottom: 24px;
-        }
-
-        .notes-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .note-card {
-            background: var(--bg-card);
-            padding: 16px;
-            border-radius: 16px;
-            border: 1px solid var(--border-color);
-            transition: background-color 0.3s ease;
-        }
-
-        .note-card h4 {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 6px;
-            color: var(--text-primary);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .note-content {
-            font-size: 14px;
-            color: var(--text-secondary);
-            margin-bottom: 8px;
-            line-height: 1.4;
-            white-space: pre-wrap;
-        }
-
-        .note-footer {
-            color: var(--text-tertiary);
-            font-size: 12px;
-        }
-
-        .note-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .edit-note, .delete-note {
-            background: none;
-            border: none;
-            font-size: 18px;
-            cursor: pointer;
-            padding: 4px 8px;
-            border-radius: 6px;
-        }
-
-        .edit-note { color: var(--accent-color); }
-        .delete-note { color: var(--danger-color); }
-
-        .edit-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: var(--modal-overlay);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-
-        .edit-modal.hidden { display: none; }
-
-        .edit-modal-content {
-            background: var(--bg-secondary);
-            width: 90%;
-            max-width: 350px;
-            border-radius: 24px;
-            padding: 24px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-        }
-
-        .edit-modal-actions {
-            display: flex;
-            gap: 12px;
-            margin-top: 16px;
-        }
-
-        .habits-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-
-        .habits-header h3, .habits-header .date {
-            color: var(--text-primary);
-        }
-
-        .habits-list {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .habit-item {
-            background: var(--bg-card);
-            border-radius: 16px;
-            padding: 16px;
-            border: 1px solid var(--border-color);
-            transition: background-color 0.3s ease;
-        }
-
-        .habit-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .habit-name { 
-            font-size: 16px; 
-            font-weight: 500; 
-            color: var(--text-primary); 
-        }
-
-        .habit-value { 
-            font-size: 18px; 
-            font-weight: 600; 
-            color: var(--accent-color); 
-        }
-
-        .habit-progress {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .habit-progress input {
-            flex: 1;
-            height: 40px;
-            padding: 0 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            font-size: 16px;
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-        }
-
-        .habit-progress button {
-            width: 40px;
-            height: 40px;
-            border: none;
-            background: var(--accent-color);
-            color: white;
-            border-radius: 10px;
-            font-size: 20px;
-            cursor: pointer;
-        }
-
-        .habit-total {
-            margin-top: 8px;
-            font-size: 14px;
-            color: var(--text-tertiary);
-            text-align: right;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin-bottom: 24px;
-        }
-
-        .stat-card {
-            background: var(--bg-card);
-            padding: 16px 8px;
-            border-radius: 16px;
-            text-align: center;
-            border: 1px solid var(--border-color);
-            transition: background-color 0.3s ease;
-        }
-
-        .stat-value {
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--accent-color);
-            margin-bottom: 4px;
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: var(--text-tertiary);
-        }
-
-        .week-section {
-            margin: 24px 0;
-        }
-
-        .week-section h4 {
-            color: var(--text-primary);
-            margin-bottom: 12px;
-        }
-
-        .week-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 6px;
-            margin-bottom: 16px;
-        }
-
-        .week-day {
-            aspect-ratio: 1;
-            background: var(--bg-card);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 13px;
-            font-weight: 500;
-            border: 1px solid var(--border-color);
-            cursor: pointer;
-            transition: 0.2s;
-            color: var(--text-primary);
-        }
-
-        .week-day.selected { 
-            background: var(--accent-color); 
-            color: white; 
-            border-color: var(--accent-color); 
-        }
-
-        .week-day.completed { 
-            background: var(--success-color); 
-            color: white; 
-            border-color: var(--success-color); 
-        }
-
-        .day-notes {
-            background: var(--bg-card);
-            border-radius: 16px;
-            padding: 16px;
-            margin-top: 16px;
-            transition: background-color 0.3s ease;
-        }
-
-        .day-notes h5 {
-            color: var(--text-primary);
-            margin-bottom: 12px;
-        }
-
-        .day-note-item {
-            background: var(--bg-secondary);
-            padding: 12px;
-            border-radius: 12px;
-            margin-bottom: 8px;
-            font-size: 14px;
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .day-note-item small {
-            color: var(--text-tertiary);
-            display: block;
-            font-size: 11px;
-        }
-
-        .note-content-wrapper {
-            flex: 1;
-        }
-
-        /* Прогресс бары для привычек */
-        .habit-progress-bar {
-            margin-top: 12px;
-            height: 6px;
-            background: var(--border-color);
-            border-radius: 3px;
-            overflow: hidden;
-        }
-
-        .habit-progress-fill {
-            height: 100%;
-            background: var(--accent-color);
-            transition: width 0.3s ease;
-        }
-
-        .habit-stats {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 8px;
-            font-size: 12px;
-            color: var(--text-tertiary);
-        }
-
-        .habit-goal {
-            font-size: 12px;
-            color: var(--text-tertiary);
-            margin-left: 8px;
-        }
-
-        @media (max-width: 400px) {
-            .app { height: 100vh; max-width: 100%; border-radius: 0; }
-        }
-    </style>
 </head>
 <body>
     <div class="theme-toggle" id="themeToggle" title="Сменить тему">🌙</div>
@@ -638,7 +55,105 @@
             <section class="screen" id="habitsScreen">
                 <div class="habits-header"><h3>Сегодня</h3><span class="date" id="todayDate"></span></div>
                 <div class="habits-list" id="habitsList">
-                    <!-- Динамически заполняется через JS -->
+                    <!-- Вода -->
+                    <div class="habit-item">
+                        <div class="habit-header">
+                            <span class="habit-name">💧 Вода</span>
+                            <span class="habit-value" id="waterTotal">0 л</span>
+                        </div>
+                        <div class="habit-progress">
+                            <input type="number" id="waterInput" min="0" step="0.1" placeholder="0.5 л">
+                            <button id="addWaterBtn">+</button>
+                        </div>
+                        <div class="habit-progress-bar">
+                            <div class="habit-progress-fill" id="waterProgress" style="width: 0%"></div>
+                        </div>
+                        <div class="habit-stats">
+                            <span>Цель: 2 л</span>
+                            <span id="waterPercent">0%</span>
+                        </div>
+                        <div class="habit-total" id="waterHistory"></div>
+                    </div>
+
+                    <!-- Спорт -->
+                    <div class="habit-item">
+                        <div class="habit-header">
+                            <span class="habit-name">🏃 Спорт</span>
+                            <span class="habit-value" id="sportTotal">0 мин</span>
+                        </div>
+                        <div class="habit-progress">
+                            <input type="number" id="sportInput" min="0" step="5" placeholder="15 мин">
+                            <button id="addSportBtn">+</button>
+                        </div>
+                        <div class="habit-progress-bar">
+                            <div class="habit-progress-fill" id="sportProgress" style="width: 0%"></div>
+                        </div>
+                        <div class="habit-stats">
+                            <span>Цель: 30 мин</span>
+                            <span id="sportPercent">0%</span>
+                        </div>
+                        <div class="habit-total" id="sportHistory"></div>
+                    </div>
+
+                    <!-- Чтение -->
+                    <div class="habit-item">
+                        <div class="habit-header">
+                            <span class="habit-name">📚 Чтение</span>
+                            <span class="habit-value" id="readTotal">0 мин</span>
+                        </div>
+                        <div class="habit-progress">
+                            <input type="number" id="readInput" min="0" step="5" placeholder="30 мин">
+                            <button id="addReadBtn">+</button>
+                        </div>
+                        <div class="habit-progress-bar">
+                            <div class="habit-progress-fill" id="readProgress" style="width: 0%"></div>
+                        </div>
+                        <div class="habit-stats">
+                            <span>Цель: 20 мин</span>
+                            <span id="readPercent">0%</span>
+                        </div>
+                        <div class="habit-total" id="readHistory"></div>
+                    </div>
+
+                    <!-- Сон -->
+                    <div class="habit-item">
+                        <div class="habit-header">
+                            <span class="habit-name">😴 Сон</span>
+                            <span class="habit-value" id="sleepTotal">0 ч</span>
+                        </div>
+                        <div class="habit-progress">
+                            <input type="number" id="sleepInput" min="0" step="0.5" placeholder="8 ч">
+                            <button id="addSleepBtn">+</button>
+                        </div>
+                        <div class="habit-progress-bar">
+                            <div class="habit-progress-fill" id="sleepProgress" style="width: 0%"></div>
+                        </div>
+                        <div class="habit-stats">
+                            <span>Цель: 8 ч</span>
+                            <span id="sleepPercent">0%</span>
+                        </div>
+                        <div class="habit-total" id="sleepHistory"></div>
+                    </div>
+
+                    <!-- Прогулка -->
+                    <div class="habit-item">
+                        <div class="habit-header">
+                            <span class="habit-name">🚶 Прогулка</span>
+                            <span class="habit-value" id="walkTotal">0 км</span>
+                        </div>
+                        <div class="habit-progress">
+                            <input type="number" id="walkInput" min="0" step="0.5" placeholder="5 км">
+                            <button id="addWalkBtn">+</button>
+                        </div>
+                        <div class="habit-progress-bar">
+                            <div class="habit-progress-fill" id="walkProgress" style="width: 0%"></div>
+                        </div>
+                        <div class="habit-stats">
+                            <span>Цель: 5 км</span>
+                            <span id="walkPercent">0%</span>
+                        </div>
+                        <div class="habit-total" id="walkHistory"></div>
+                    </div>
                 </div>
                 <button class="btn btn-primary" id="saveHabitsBtn">Сохранить прогресс</button>
                 <div class="hint" id="habitsHint">Прогресс сохранен</div>
@@ -661,15 +176,12 @@
                     <div class="stat-card"><div class="stat-value" id="statTotalAll">0</div><div class="stat-label">всего действий</div></div>
                 </div>
 
-                <!-- Визуализация прогресса за период -->
                 <div class="week-section">
                     <h4>Прогресс за последние 7 дней</h4>
                     <div class="week-grid" id="weekStats"></div>
                     
-                    <!-- График прогресса -->
                     <div style="margin: 20px 0;" id="progressVisualization"></div>
                     
-                    <!-- Детальный просмотр дня -->
                     <div class="day-notes" id="dayNotesContainer" style="display: none;">
                         <h5>Детали дня <span id="selectedDate"></span></h5>
                         <div id="dayDetails"></div>
@@ -701,556 +213,6 @@
         </div>
     </div>
 
-    <script>
-        // ========== ДАННЫЕ ==========
-        let profile = {
-            name: 'Иван Петров',
-            bio: 'Студент СПО, учусь мобильной разработке',
-            birthday: '',
-            avatar: null
-        };
-        let notes = [];
-        
-        // Обновленная структура привычек с целями
-        const HABIT_TYPES = [
-            { id: 'water', name: 'Вода', unit: 'л', goal: 2, step: 0.1, icon: '💧' },
-            { id: 'sport', name: 'Спорт', unit: 'мин', goal: 30, step: 5, icon: '🏃' },
-            { id: 'read', name: 'Чтение', unit: 'мин', goal: 20, step: 5, icon: '📚' },
-            { id: 'sleep', name: 'Сон', unit: 'ч', goal: 8, step: 0.5, icon: '😴' },
-            { id: 'walk', name: 'Прогулка', unit: 'км', goal: 5, step: 0.5, icon: '🚶' }
-        ];
-        
-        let habits = {
-            water: { history: {} },
-            sport: { history: {} },
-            read: { history: {} },
-            sleep: { history: {} },
-            walk: { history: {} },
-            lastUpdate: '',
-            streak: 0
-        };
-        
-        let dayNotes = {};
-
-        // ========== ЭЛЕМЕНТЫ ==========
-        const tabs = document.querySelectorAll('.tab-btn');
-        const screens = document.querySelectorAll('.screen');
-        const avatarDisplay = document.getElementById('avatarDisplay');
-        const avatarUpload = document.getElementById('avatarUpload');
-        const changeAvatarBtn = document.getElementById('changeAvatarBtn');
-        const profileName = document.getElementById('profileName');
-        const profileBio = document.getElementById('profileBio');
-        const profileBirthday = document.getElementById('profileBirthday');
-        const profileNameDisplay = document.getElementById('profileNameDisplay');
-        const saveProfileBtn = document.getElementById('saveProfileBtn');
-        const profileHint = document.getElementById('profileHint');
-        const noteTitle = document.getElementById('noteTitle');
-        const noteContent = document.getElementById('noteContent');
-        const addNoteBtn = document.getElementById('addNoteBtn');
-        const notesList = document.getElementById('notesList');
-        const insertBulletListBtn = document.getElementById('insertBulletListBtn');
-        const insertNumberListBtn = document.getElementById('insertNumberListBtn');
-        const editModal = document.getElementById('editModal');
-        const editTitle = document.getElementById('editTitle');
-        const editContent = document.getElementById('editContent');
-        const editBulletListBtn = document.getElementById('editBulletListBtn');
-        const editNumberListBtn = document.getElementById('editNumberListBtn');
-        const cancelEditBtn = document.getElementById('cancelEditBtn');
-        const saveEditBtn = document.getElementById('saveEditBtn');
-        let currentEditId = null;
-        const todayDate = document.getElementById('todayDate');
-        const saveHabitsBtn = document.getElementById('saveHabitsBtn');
-        const habitsHint = document.getElementById('habitsHint');
-        const statStreak = document.getElementById('statStreak');
-        const statTotalWater = document.getElementById('statTotalWater');
-        const statTotalSport = document.getElementById('statTotalSport');
-        const statTotalRead = document.getElementById('statTotalRead');
-        const statTotalSleep = document.getElementById('statTotalSleep');
-        const statTotalWalk = document.getElementById('statTotalWalk');
-        const statTotalAll = document.getElementById('statTotalAll');
-        const statNotes = document.getElementById('statNotes');
-        const weekStats = document.getElementById('weekStats');
-        const resetDataBtn = document.getElementById('resetDataBtn');
-        const dayNotesContainer = document.getElementById('dayNotesContainer');
-        const selectedDateSpan = document.getElementById('selectedDate');
-        const dayNotesList = document.getElementById('dayNotesList');
-        const dayNoteInput = document.getElementById('dayNoteInput');
-        const addDayNoteBtn = document.getElementById('addDayNoteBtn');
-        const dayDetails = document.getElementById('dayDetails');
-        const progressVisualization = document.getElementById('progressVisualization');
-        const habitsList = document.getElementById('habitsList');
-        const themeToggle = document.getElementById('themeToggle');
-        let currentSelectedDate = null;
-
-        // ========== ТЕМА ==========
-        function initTheme() {
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
-                document.body.classList.add('dark-theme');
-                themeToggle.textContent = '☀️';
-                document.getElementById('themeColor').setAttribute('content', '#0a84ff');
-            } else {
-                themeToggle.textContent = '🌙';
-                document.getElementById('themeColor').setAttribute('content', '#007aff');
-            }
-        }
-
-        themeToggle.addEventListener('click', () => {
-            document.body.classList.toggle('dark-theme');
-            const isDark = document.body.classList.contains('dark-theme');
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            themeToggle.textContent = isDark ? '☀️' : '🌙';
-            document.getElementById('themeColor').setAttribute('content', isDark ? '#0a84ff' : '#007aff');
-        });
-
-        // ========== ЗАГРУЗКА ==========
-        function loadData() {
-            const savedProfile = localStorage.getItem('profile');
-            if (savedProfile) {
-                profile = JSON.parse(savedProfile);
-                profileName.value = profile.name || '';
-                profileBio.value = profile.bio || '';
-                profileBirthday.value = profile.birthday || '';
-                profileNameDisplay.textContent = profile.name || 'Иван Петров';
-                if (profile.avatar) {
-                    if (profile.avatar.startsWith('data:image')) {
-                        avatarDisplay.innerHTML = `<img src="${profile.avatar}" alt="avatar">`;
-                    } else {
-                        avatarDisplay.textContent = profile.avatar;
-                    }
-                }
-            }
-            
-            const savedNotes = localStorage.getItem('notes');
-            if (savedNotes) {
-                notes = JSON.parse(savedNotes);
-                renderNotes();
-            }
-            
-            const savedHabits = localStorage.getItem('habits');
-            if (savedHabits) {
-                const parsed = JSON.parse(savedHabits);
-                // Добавляем новые привычки, если их нет
-                HABIT_TYPES.forEach(habit => {
-                    if (!parsed[habit.id]) {
-                        parsed[habit.id] = { history: {} };
-                    }
-                });
-                habits = parsed;
-            }
-            
-            const savedDayNotes = localStorage.getItem('dayNotes');
-            if (savedDayNotes) {
-                dayNotes = JSON.parse(savedDayNotes);
-            }
-            
-            updateHabitsUI();
-            updateStats();
-        }
-
-        // ========== НАВИГАЦИЯ ==========
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                tabs.forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                const screenId = tab.dataset.screen;
-                screens.forEach(screen => screen.classList.remove('active'));
-                document.getElementById(screenId + 'Screen').classList.add('active');
-            });
-        });
-
-        // ========== АВАТАР ==========
-        changeAvatarBtn.addEventListener('click', () => avatarUpload.click());
-        avatarUpload.addEventListener('change', (event) => {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const imageData = e.target.result;
-                    avatarDisplay.innerHTML = `<img src="${imageData}" alt="avatar">`;
-                    profile.avatar = imageData;
-                    localStorage.setItem('profile', JSON.stringify(profile));
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-
-        // ========== ПРОФИЛЬ ==========
-        function saveProfile() {
-            profile.name = profileName.value;
-            profile.bio = profileBio.value;
-            profile.birthday = profileBirthday.value;
-            profileNameDisplay.textContent = profile.name;
-            localStorage.setItem('profile', JSON.stringify(profile));
-            profileHint.classList.add('show');
-            setTimeout(() => profileHint.classList.remove('show'), 1500);
-        }
-        saveProfileBtn.addEventListener('click', saveProfile);
-        profileName.addEventListener('input', saveProfile);
-        profileBio.addEventListener('input', saveProfile);
-        profileBirthday.addEventListener('change', saveProfile);
-
-        // ========== ЗАМЕТКИ ==========
-        function addNote() {
-            if (noteTitle.value.trim() && noteContent.value.trim()) {
-                notes.unshift({
-                    id: Date.now(),
-                    title: noteTitle.value,
-                    content: noteContent.value,
-                    date: new Date().toLocaleDateString('ru-RU')
-                });
-                localStorage.setItem('notes', JSON.stringify(notes));
-                noteTitle.value = '';
-                noteContent.value = '';
-                renderNotes();
-                updateStats();
-            }
-        }
-        
-        function editNote(id) {
-            const note = notes.find(n => n.id === id);
-            if (note) {
-                currentEditId = id;
-                editTitle.value = note.title;
-                editContent.value = note.content;
-                editModal.classList.remove('hidden');
-            }
-        }
-        
-        function saveEditedNote() {
-            if (currentEditId && editTitle.value.trim() && editContent.value.trim()) {
-                const index = notes.findIndex(n => n.id === currentEditId);
-                if (index !== -1) {
-                    notes[index].title = editTitle.value;
-                    notes[index].content = editContent.value;
-                    localStorage.setItem('notes', JSON.stringify(notes));
-                    renderNotes();
-                }
-            }
-            editModal.classList.add('hidden');
-            currentEditId = null;
-        }
-        
-        window.deleteNote = function(id) {
-            if (confirm('Удалить заметку?')) {
-                notes = notes.filter(note => note.id !== id);
-                localStorage.setItem('notes', JSON.stringify(notes));
-                renderNotes();
-                updateStats();
-            }
-        };
-        
-        window.editNote = editNote;
-        
-        function renderNotes() {
-            notesList.innerHTML = notes.map(note => `
-                <div class="note-card">
-                    <h4>${note.title}
-                        <span class="note-actions">
-                            <button class="edit-note" onclick="editNote(${note.id})">✏️</button>
-                            <button class="delete-note" onclick="deleteNote(${note.id})">✕</button>
-                        </span>
-                    </h4>
-                    <div class="note-content">${note.content.replace(/\n/g, '<br>')}</div>
-                    <div class="note-footer">${note.date}</div>
-                </div>
-            `).join('');
-        }
-        
-        addNoteBtn.addEventListener('click', addNote);
-        insertBulletListBtn.addEventListener('click', () => { noteContent.value += '\n• '; noteContent.focus(); });
-        insertNumberListBtn.addEventListener('click', () => { noteContent.value += '\n1. '; noteContent.focus(); });
-        editBulletListBtn.addEventListener('click', () => { editContent.value += '\n• '; editContent.focus(); });
-        editNumberListBtn.addEventListener('click', () => { editContent.value += '\n1. '; editContent.focus(); });
-        cancelEditBtn.addEventListener('click', () => { editModal.classList.add('hidden'); currentEditId = null; });
-        saveEditBtn.addEventListener('click', saveEditedNote);
-        editModal.addEventListener('click', (e) => { if (e.target === editModal) { editModal.classList.add('hidden'); currentEditId = null; } });
-
-        // ========== ПРИВЫЧКИ ==========
-        function updateHabitsUI() {
-            const today = new Date().toISOString().split('T')[0];
-            
-            // Генерируем HTML для всех привычек
-            habitsList.innerHTML = HABIT_TYPES.map(habit => {
-                const habitData = habits[habit.id] || { history: {} };
-                const todayValue = habitData.history?.[today] || 0;
-                const progressPercent = Math.min(100, (todayValue / habit.goal) * 100);
-                
-                return `
-                    <div class="habit-item">
-                        <div class="habit-header">
-                            <span class="habit-name">${habit.icon} ${habit.name}</span>
-                            <span class="habit-value" id="${habit.id}Total">${todayValue.toFixed(1)} ${habit.unit}</span>
-                        </div>
-                        <div class="habit-progress">
-                            <input type="number" id="${habit.id}Input" min="0" step="${habit.step}" placeholder="${habit.goal} ${habit.unit}">
-                            <button id="add${habit.id.charAt(0).toUpperCase() + habit.id.slice(1)}Btn">+</button>
-                        </div>
-                        <div class="habit-progress-bar">
-                            <div class="habit-progress-fill" style="width: ${progressPercent}%"></div>
-                        </div>
-                        <div class="habit-stats">
-                            <span>Цель: ${habit.goal} ${habit.unit}</span>
-                            <span>${progressPercent.toFixed(0)}%</span>
-                        </div>
-                        <div class="habit-total" id="${habit.id}History">
-                            ${todayValue > 0 ? `Сегодня: ${todayValue.toFixed(1)} ${habit.unit}` : ''}
-                        </div>
-                    </div>
-                `;
-            }).join('');
-            
-            // Добавляем обработчики для каждой привычки
-            HABIT_TYPES.forEach(habit => {
-                const input = document.getElementById(`${habit.id}Input`);
-                const btn = document.getElementById(`add${habit.id.charAt(0).toUpperCase() + habit.id.slice(1)}Btn`);
-                
-                if (input && btn) {
-                    btn.addEventListener('click', () => addHabitValue(habit.id, input));
-                    input.addEventListener('keypress', (e) => { 
-                        if (e.key === 'Enter') addHabitValue(habit.id, input); 
-                    });
-                }
-            });
-            
-            // Обновляем подсчет стрика
-            updateStreak();
-        }
-        
-        function addHabitValue(type, input) {
-            const today = new Date().toISOString().split('T')[0];
-            const value = parseFloat(input.value);
-            
-            if (value > 0) {
-                if (!habits[type].history) habits[type].history = {};
-                habits[type].history[today] = (habits[type].history[today] || 0) + value;
-                habits.lastUpdate = today;
-                
-                localStorage.setItem('habits', JSON.stringify(habits));
-                updateHabitsUI();
-                updateStats();
-                updateStreak();
-                
-                input.value = '';
-                
-                // Показываем подсказку
-                habitsHint.classList.add('show');
-                setTimeout(() => habitsHint.classList.remove('show'), 1500);
-            }
-        }
-        
-        function updateStreak() {
-            let streak = 0;
-            const today = new Date().toISOString().split('T')[0];
-            let currentDate = new Date(today);
-            
-            // Проверяем последовательные дни
-            while (true) {
-                const dateStr = currentDate.toISOString().split('T')[0];
-                let hasActivity = false;
-                
-                HABIT_TYPES.forEach(habit => {
-                    if (habits[habit.id]?.history?.[dateStr]) {
-                        hasActivity = true;
-                    }
-                });
-                
-                if (hasActivity) {
-                    streak++;
-                    currentDate.setDate(currentDate.getDate() - 1);
-                } else {
-                    break;
-                }
-            }
-            
-            habits.streak = streak;
-            localStorage.setItem('habits', JSON.stringify(habits));
-        }
-        
-        saveHabitsBtn.addEventListener('click', () => {
-            habitsHint.classList.add('show');
-            setTimeout(() => habitsHint.classList.remove('show'), 1500);
-        });
-
-        // ========== СТАТИСТИКА ==========
-        function updateStats() {
-            const totalWater = Object.values(habits.water.history || {}).reduce((a,b)=>a+b,0);
-            const totalSport = Object.values(habits.sport.history || {}).reduce((a,b)=>a+b,0);
-            const totalRead = Object.values(habits.read.history || {}).reduce((a,b)=>a+b,0);
-            const totalSleep = Object.values(habits.sleep.history || {}).reduce((a,b)=>a+b,0);
-            const totalWalk = Object.values(habits.walk.history || {}).reduce((a,b)=>a+b,0);
-            
-            statStreak.textContent = habits.streak || 0;
-            statTotalWater.textContent = totalWater.toFixed(1) + ' л';
-            statTotalSport.textContent = totalSport + ' мин';
-            statTotalRead.textContent = totalRead + ' мин';
-            statTotalSleep.textContent = totalSleep.toFixed(1) + ' ч';
-            statTotalWalk.textContent = totalWalk.toFixed(1) + ' км';
-            
-            const totalActions = Object.keys(habits.water.history||{}).length + 
-                                Object.keys(habits.sport.history||{}).length + 
-                                Object.keys(habits.read.history||{}).length +
-                                Object.keys(habits.sleep.history||{}).length +
-                                Object.keys(habits.walk.history||{}).length;
-            
-            statTotalAll.textContent = totalActions;
-            statNotes.textContent = notes.length;
-            
-            renderWeekCalendar();
-            renderProgressVisualization();
-        }
-        
-        function renderWeekCalendar() {
-            const days = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
-            let html = '';
-            
-            for (let i = 0; i < 7; i++) {
-                const date = new Date();
-                date.setDate(date.getDate() - (6 - i));
-                const dateStr = date.toISOString().split('T')[0];
-                
-                let hasActivity = false;
-                HABIT_TYPES.forEach(habit => {
-                    if (habits[habit.id]?.history?.[dateStr]) {
-                        hasActivity = true;
-                    }
-                });
-                
-                const isSelected = currentSelectedDate === dateStr;
-                const dayName = days[date.getDay() === 0 ? 6 : date.getDay() - 1];
-                
-                html += `<div class="week-day ${hasActivity ? 'completed' : ''} ${isSelected ? 'selected' : ''}" data-date="${dateStr}">${dayName}</div>`;
-            }
-            
-            weekStats.innerHTML = html;
-            
-            document.querySelectorAll('.week-day').forEach(day => {
-                day.addEventListener('click', () => selectDate(day.dataset.date));
-            });
-        }
-        
-        function renderProgressVisualization() {
-            const dates = [];
-            for (let i = 6; i >= 0; i--) {
-                const date = new Date();
-                date.setDate(date.getDate() - i);
-                dates.push(date.toISOString().split('T')[0]);
-            }
-            
-            let html = '<div style="display: flex; flex-direction: column; gap: 12px;">';
-            
-            HABIT_TYPES.forEach(habit => {
-                html += `<div style="margin-bottom: 8px;">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                        <span style="color: var(--text-primary);">${habit.icon} ${habit.name}</span>
-                        <span style="color: var(--text-tertiary);">цель: ${habit.goal} ${habit.unit}</span>
-                    </div>`;
-                
-                dates.forEach((date, index) => {
-                    const value = habits[habit.id]?.history?.[date] || 0;
-                    const percent = Math.min(100, (value / habit.goal) * 100);
-                    const dayNames = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
-                    const dayName = dayNames[new Date(date).getDay() === 0 ? 6 : new Date(date).getDay() - 1];
-                    
-                    html += `
-                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-                            <span style="width: 30px; color: var(--text-tertiary); font-size: 12px;">${dayName}</span>
-                            <div style="flex: 1; height: 8px; background: var(--border-color); border-radius: 4px; overflow: hidden;">
-                                <div style="height: 100%; width: ${percent}%; background: var(--accent-color); transition: width 0.3s;"></div>
-                            </div>
-                            <span style="width: 40px; color: var(--text-primary); font-size: 12px; text-align: right;">${value.toFixed(1)}</span>
-                        </div>
-                    `;
-                });
-                
-                html += '</div>';
-            });
-            
-            html += '</div>';
-            progressVisualization.innerHTML = html;
-        }
-        
-        function selectDate(date) {
-            currentSelectedDate = date;
-            document.querySelectorAll('.week-day').forEach(day => {
-                day.classList.toggle('selected', day.dataset.date === date);
-            });
-            
-            const formattedDate = new Date(date).toLocaleDateString('ru-RU');
-            selectedDateSpan.textContent = formattedDate;
-            
-            // Показываем детали дня
-            let detailsHtml = '<div style="margin-bottom: 16px;">';
-            HABIT_TYPES.forEach(habit => {
-                const value = habits[habit.id]?.history?.[date] || 0;
-                if (value > 0) {
-                    detailsHtml += `<div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                        <span>${habit.icon} ${habit.name}</span>
-                        <span style="color: var(--accent-color);">${value.toFixed(1)} ${habit.unit}</span>
-                    </div>`;
-                }
-            });
-            
-            if (detailsHtml === '<div style="margin-bottom: 16px;">') {
-                detailsHtml += '<p style="color: var(--text-tertiary);">Нет активности в этот день</p>';
-            }
-            detailsHtml += '</div>';
-            
-            dayDetails.innerHTML = detailsHtml;
-            
-            // Показываем заметки за день
-            const notesForDay = dayNotes[date] || [];
-            dayNotesList.innerHTML = notesForDay.length 
-                ? notesForDay.map((note, i) => `
-                    <div class="day-note-item">
-                        <div class="note-content-wrapper">${note}</div>
-                        <button class="delete-note" onclick="deleteDayNote('${date}',${i})">✕</button>
-                    </div>
-                `).join('')
-                : '<p style="color: var(--text-tertiary);">Нет заметок за этот день</p>';
-            
-            dayNotesContainer.style.display = 'block';
-        }
-        
-        window.deleteDayNote = (date, index) => {
-            if (dayNotes[date]) {
-                dayNotes[date].splice(index, 1);
-                if (dayNotes[date].length === 0) delete dayNotes[date];
-                localStorage.setItem('dayNotes', JSON.stringify(dayNotes));
-                selectDate(date);
-            }
-        };
-        
-        addDayNoteBtn.addEventListener('click', () => {
-            if (currentSelectedDate && dayNoteInput.value.trim()) {
-                if (!dayNotes[currentSelectedDate]) dayNotes[currentSelectedDate] = [];
-                dayNotes[currentSelectedDate].push(dayNoteInput.value);
-                localStorage.setItem('dayNotes', JSON.stringify(dayNotes));
-                dayNoteInput.value = '';
-                selectDate(currentSelectedDate);
-            }
-        });
-        
-        resetDataBtn.addEventListener('click', () => {
-            if (confirm('Удалить все данные?')) {
-                localStorage.clear();
-                location.reload();
-            }
-        });
-
-        // ========== SERVICE WORKER ==========
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/public/sw.js')
-                    .then(reg => console.log('✅ SW registered'))
-                    .catch(err => console.log('❌ SW error:', err));
-            });
-        }
-
-        // ========== ИНИЦИАЛИЗАЦИЯ ==========
-        todayDate.textContent = new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' });
-        initTheme();
-        loadData();
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
